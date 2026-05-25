@@ -1,45 +1,5 @@
-   0.224963200s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log_server"}: cargo::core::compiler::fingerprint: stale: changed "C:\\Users\\kklop\\code\\log-server\\src\\handlers.rs"
-   0.225008400s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log_server"}: cargo::core::compiler::fingerprint:           (vs) "C:\\Users\\kklop\\code\\log-server\\target\\debug\\.fingerprint\\log-server-7b38e0470fd509af\\dep-lib-log_server"
-   0.225016300s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log_server"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 13424189281, nanos: 252153600 } < FileTime { seconds: 13424190011, nanos: 202326400 }
-   0.225350000s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log_server"}: cargo::core::compiler::fingerprint: fingerprint dirty for log-server v0.1.0 (C:\Users\kklop\code\log-server)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("log_server", ["lib"], "C:\\Users\\kklop\\code\\log-server\\src\\lib.rs", Edition2021) }
-   0.225389600s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log_server"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "C:\\Users\\kklop\\code\\log-server\\target\\debug\\.fingerprint\\log-server-7b38e0470fd509af\\dep-lib-log_server", reference_mtime: FileTime { seconds: 13424189281, nanos: 252153600 }, stale: "C:\\Users\\kklop\\code\\log-server\\src\\handlers.rs", stale_mtime: FileTime { seconds: 13424190011, nanos: 202326400 } }))
-   0.273702700s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log_server"}: cargo::core::compiler::fingerprint: stale: changed "C:\\Users\\kklop\\code\\log-server\\src\\handlers.rs"
-   0.273721200s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log_server"}: cargo::core::compiler::fingerprint:           (vs) "C:\\Users\\kklop\\code\\log-server\\target\\debug\\.fingerprint\\log-server-a4d08f7f9a7e96a3\\dep-test-lib-log_server"
-   0.273728200s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log_server"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 13424189281, nanos: 252153600 } < FileTime { seconds: 13424190011, nanos: 202326400 }
-   0.273971100s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log_server"}: cargo::core::compiler::fingerprint: fingerprint dirty for log-server v0.1.0 (C:\Users\kklop\code\log-server)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("log_server", ["lib"], "C:\\Users\\kklop\\code\\log-server\\src\\lib.rs", Edition2021) }
-   0.273991200s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log_server"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "C:\\Users\\kklop\\code\\log-server\\target\\debug\\.fingerprint\\log-server-a4d08f7f9a7e96a3\\dep-test-lib-log_server", reference_mtime: FileTime { seconds: 13424189281, nanos: 252153600 }, stale: "C:\\Users\\kklop\\code\\log-server\\src\\handlers.rs", stale_mtime: FileTime { seconds: 13424190011, nanos: 202326400 } }))
-   0.279784600s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log-server"}: cargo::core::compiler::fingerprint: fingerprint dirty for log-server v0.1.0 (C:\Users\kklop\code\log-server)/Check { test: false }/TargetInner { name: "log-server", doc: true, ..: with_path("C:\\Users\\kklop\\code\\log-server\\src\\main.rs", Edition2021) }
-   0.279803800s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log-server"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { unit: UnitIndex(67) })
-   0.282697200s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log-server"}: cargo::core::compiler::fingerprint: fingerprint error for log-server v0.1.0 (C:\Users\kklop\code\log-server)/Check { test: true }/TargetInner { name: "log-server", doc: true, ..: with_path("C:\\Users\\kklop\\code\\log-server\\src\\main.rs", Edition2021) }
-   0.282725200s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="log-server"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\kklop\code\log-server\target\debug\.fingerprint\log-server-8430ce54c567df33\test-bin-log-server`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.296124800s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="integration_tests"}: cargo::core::compiler::fingerprint: fingerprint error for log-server v0.1.0 (C:\Users\kklop\code\log-server)/Check { test: true }/TargetInner { kind: "test", name: "integration_tests", benched: false, ..: with_path("C:\\Users\\kklop\\code\\log-server\\tests\\integration_tests.rs", Edition2021) }
-   0.296148400s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="integration_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\kklop\code\log-server\target\debug\.fingerprint\log-server-0840bb5f6e750265\test-integration-test-integration_tests`
+   0.256315700s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="integration_tests"}: cargo::core::compiler::fingerprint: fingerprint error for log-server v0.1.0 (C:\Users\kklop\code\log-server)/Check { test: true }/TargetInner { kind: "test", name: "integration_tests", benched: false, ..: with_path("C:\\Users\\kklop\\code\\log-server\\tests\\integration_tests.rs", Edition2021) }
+   0.256371200s  INFO prepare_target{force=false package_id=log-server v0.1.0 (C:\Users\kklop\code\log-server) target="integration_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\kklop\code\log-server\target\debug\.fingerprint\log-server-0840bb5f6e750265\test-integration-test-integration_tests`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
