@@ -1,5 +1,5 @@
 use axum::{
-    http::{Method, StatusCode},
+    http::StatusCode,
     response::{Html, IntoResponse, Response},
     routing::get,
     Router,
@@ -25,16 +25,19 @@ pub async fn not_found_handler() -> Response {
         .into_response()
 }
 
+pub fn create_app() -> Router<()> {
+    Router::new()
+        .route("/", get(root_handler))
+        .route("/hello", get(hello_handler))
+        .route("/health", get(health_handler))
+        .fallback(not_found_handler)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use tower::ServiceExt;
-    use axum::{
-        http::{Method, StatusCode},
-        response::{Html, IntoResponse},
-        routing::get,
-        Router,
-    };
+    use http::Method;
 
     #[tokio::test]
     async fn test_root() {
@@ -93,13 +96,4 @@ mod tests {
             .unwrap();
         assert_eq!(res.status(), StatusCode::NOT_FOUND);
     }
-}
-
-#[cfg(test)]
-pub fn create_app() -> Router<()> {
-    Router::new()
-        .route("/", get(root_handler))
-        .route("/hello", get(hello_handler))
-        .route("/health", get(health_handler))
-        .fallback(not_found_handler)
 }

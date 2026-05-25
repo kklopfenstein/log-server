@@ -1,7 +1,6 @@
-use axum::{routing::get, Router};
 use tracing_subscriber::EnvFilter;
+use crate::handlers::create_app;
 mod handlers;
-use crate::handlers::{root_handler, hello_handler, health_handler, not_found_handler};
 
 #[tokio::main]
 async fn main() {
@@ -12,14 +11,10 @@ async fn main() {
         )
         .init();
 
-    let app = Router::new()
-        .route("/", get(root_handler))
-        .route("/hello", get(hello_handler))
-        .route("/health", get(health_handler))
-        .fallback(get(not_found_handler));
+    let app = create_app();
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:6969").await.unwrap();
-    let _service = axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 
     tracing::info!("Log server running on port 6969");
 }
