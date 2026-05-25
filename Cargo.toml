@@ -16,7 +16,9 @@ http = "1.1"
 [dev-dependencies]
 anyhow = "1.0"
 mockall = "0.12"
-tower-test = "0.4"
+axum-test = "14.1"
+    http-body-util = "0.1"
+    tower = "0.4"
 
 [[bin]]
 name = "log-server"
