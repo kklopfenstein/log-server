@@ -9,12 +9,6 @@ Location: `src/main.rs` within `#[cfg(test)]` module
 - Mock dependencies with mockall
 - Test error paths
 
-### Integration Tests (separate file)
-Location: `tests/integration_tests.rs`
-- Full app behavior via TestClient
-- Complete request/response cycles
-- Verify HTTP status codes and bodies
-
 ### Before merging any change:
 1. Run `cargo test --all`
 2. Ensure all tests pass
