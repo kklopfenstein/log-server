@@ -1,0 +1,27 @@
+[package]
+name = "log-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+smol = "1.2"
+tokio = { version = "1", features = ["full"] }
+tower-http = { version = "0.5", features = ["fs", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+hyper = "1.3"
+http = "1.1"
+
+[dev-dependencies]
+anyhow = "1.0"
+mockall = "0.12"
+tower-test = "0.4"
+
+[[bin]]
+name = "log-server"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
