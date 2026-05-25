@@ -24,7 +24,7 @@ pub async fn create_app() -> Router<()> {
         .route("/", get(root_handler))
         .route("/hello", get(hello_handler))
         .route("/health", get(health_handler))
-        .route("/logs", get(logs_handler))
+        .route("/logs/{path_name}", get(logs_handler))
         .fallback(not_found)
 }
 
@@ -41,10 +41,10 @@ pub async fn health_handler() -> &'static str {
 }
 
 pub async fn logs_handler(
-    path: Path<String>,
+    Path(path_name): Path<String>,
     query: Query<LogsQuery>,
 ) -> Response {
-    handle_get_logs(path.0, query.0).await
+    handle_get_logs(path_name, query.0).await
 }
 
 pub async fn handle_get_logs(name: String, query: LogsQuery) -> Response {
