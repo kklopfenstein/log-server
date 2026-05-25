@@ -1,5 +1,0 @@
-C:\Users\kklop\code\log-server\target\debug\build\winapi-51d3b65dd5c2df65\build_script_build-51d3b65dd5c2df65.d: C:\Users\kklop\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-0.3.9\build.rs
-
-C:\Users\kklop\code\log-server\target\debug\build\winapi-51d3b65dd5c2df65\build_script_build-51d3b65dd5c2df65.exe: C:\Users\kklop\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-0.3.9\build.rs
-
-C:\Users\kklop\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-0.3.9\build.rs:
