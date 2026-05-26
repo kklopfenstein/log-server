@@ -28,6 +28,16 @@ async fn main() {
 
     println!("log_server: Starting on port 6969");
     println!("log_server: Config file: {}", config_path);
+    match &config.files {
+        Some(files) => {
+            for (name, path) in files {
+                println!("{}: {}", name, path);
+            }
+        }
+        None => {
+            println!("No files configured.");
+        }
+    }
 
     let app = create_app(config).await;
     let listener = tokio::net::TcpListener::bind("0.0.0.0:6969").await.unwrap();

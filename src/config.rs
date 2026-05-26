@@ -32,10 +32,6 @@ impl LogConfig {
         Ok(LogConfig::default())
     }
 
-    pub fn empty() -> Self {
-        LogConfig::default()
-    }
-
     pub fn get(&self, name: &str) -> Option<&String> {
         self.files.as_ref().and_then(|files| files.get(name))
     }

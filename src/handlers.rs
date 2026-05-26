@@ -1,5 +1,5 @@
 use axum::{
-    Router, extract::{Path, Query}, response::{IntoResponse, Json, Response}, routing::get
+    Router, extract::{Path, Query, State}, response::{IntoResponse, Json, Response}, routing::get
 };
 use http::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -20,13 +20,14 @@ pub struct LogsQuery {
     pub limit: Option<u64>,
 }
 
-pub async fn create_app(config: crate::config::LogConfig) -> Router<()> {
+pub async fn create_app(config: LogConfig) -> Router<()> {
     Router::new()
         .route("/", get(root_handler))
         .route("/hello", get(hello_handler))
         .route("/health", get(health_handler))
         .route("/logs/{path_name}", get(logs_handler))
         .fallback(not_found)
+        .with_state(config)
 }
 
 pub async fn root_handler() -> impl IntoResponse {
@@ -44,21 +45,26 @@ pub async fn health_handler() -> &'static str {
 pub async fn logs_handler(
     Path(path_name): Path<String>,
     query: Query<LogsQuery>,
+    State(state): State<LogConfig>
 ) -> Response {
-    handle_get_logs(path_name, query.0).await
+    handle_get_logs(path_name, query.0, state).await
 }
 
-pub async fn handle_get_logs(name: String, query: LogsQuery) -> Response {
+pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConfig) -> Response {
     let cursor = query.cursor.unwrap_or(0);
     let limit = query.limit.unwrap_or(100).min(1000).max(1);
 
+    let Some(file_path) = log_config.get(&name) else {
+        return (StatusCode::NOT_FOUND, build_not_found_error(format!("{} was not found in the configuration file", &name))).into_response()
+    };
+
     // Try to read the log file
-    let file_opt = std::fs::read(&name);
+    let file_opt = std::fs::read(&file_path);
     let file_content = match file_opt {
         Ok(f) => f,
         Err(e) => {
             eprintln!("Failed to read log file: {}", e);
-            return not_found().await;
+            return (StatusCode::NOT_FOUND, build_not_found_error(format!("encountered error {} while attempting to read log file {}", e, &file_path))).into_response();
         }
     };
     
@@ -103,10 +109,19 @@ pub async fn not_found() -> Response {
     (StatusCode::NOT_FOUND, body).into_response()
 }
 
+fn build_not_found_error(custom_message: String) -> String {
+    format!("<!DOCTYPE html>\n<html><head><title>404 - Not Found</title></head><body>\n<h1>404 - Not Found</h1>\n{}\n</body></html>", custom_message)
+}
+
 #[cfg(test)]
 mod tests {
-    use axum::extract::Path;
-    use super::logs_handler;
+    use std::collections::HashMap;
+
+use axum::extract::Path;
+use axum::extract::State;
+    use crate::config::LogConfig;
+
+use super::logs_handler;
     use super::not_found;
     use super::root_handler;
     use super::hello_handler;
@@ -153,7 +168,13 @@ use axum::response::IntoResponse;
             limit: Some(3),
         };
 
-        let response = logs_handler(Path(temp_file.to_string()), Query(query)).await.into_response();
+        let state = LogConfig {
+            files: Some(HashMap::from([
+                ("test".to_string(), "target/debug/temp_test.log".to_string())
+            ]))
+        };
+
+        let response = logs_handler(Path("test".to_string()), Query(query), State(state)).await.into_response();
         let status = response.status();
         assert_eq!(status, StatusCode::OK);
         let body = response.into_body();
@@ -180,7 +201,13 @@ use axum::response::IntoResponse;
             limit: None,
         };
 
-        let response = logs_handler(Path(temp_file.to_string()), Query(query)).await;
+        let state = LogConfig {
+            files: Some(HashMap::from([
+                ("test".to_string(), "target/debug/temp_empty.log".to_string())
+            ]))
+        };
+
+        let response = logs_handler(Path("test".to_string()), Query(query), State(state)).await;
         let (_, body) = response.into_parts();
         let body_bytes = axum::body::to_bytes(body, usize::MAX);
         let body_str = String::from_utf8(body_bytes.await.unwrap().to_vec()).unwrap();
@@ -202,7 +229,13 @@ use axum::response::IntoResponse;
             limit: Some(5),
         };
 
-        let response = logs_handler(Path(temp_file.to_string()), Query(query)).await;
+        let state = LogConfig {
+            files: Some(HashMap::from([
+                ("test".to_string(), "target/debug/temp_cursor.log".to_string())
+            ]))
+        };
+
+        let response = logs_handler(Path("test".to_string()), Query(query), State(state)).await;
         let (_, body) = response.into_parts();
         let body_bytes = axum::body::to_bytes(body, usize::MAX);
         let body_str = String::from_utf8(body_bytes.await.unwrap().to_vec()).unwrap();
