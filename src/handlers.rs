@@ -3,6 +3,7 @@ use axum::{
 };
 use http::StatusCode;
 use serde::{Deserialize, Serialize};
+use crate::config::Files;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LogLine {
@@ -19,7 +20,7 @@ pub struct LogsQuery {
     pub limit: Option<u64>,
 }
 
-pub async fn create_app() -> Router<()> {
+pub async fn create_app(_files: Files) -> Router<()> {
     Router::new()
         .route("/", get(root_handler))
         .route("/hello", get(hello_handler))

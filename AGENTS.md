@@ -16,3 +16,6 @@ Location: `src/main.rs` within `#[cfg(test)]` module
 
 ### Mockall Usage
 For stateless handlers, minimal mocking needed, but use mockall for future dependencies.
+
+### Use powershell commands
+Use powershell commands and don't use bash commands.
