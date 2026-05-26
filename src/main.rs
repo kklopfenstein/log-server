@@ -1,6 +1,5 @@
-use std::collections::HashMap;
 use tracing_subscriber::EnvFilter;
-use crate::config::{Files, LogConfig};
+use crate::config::LogConfig;
 use crate::handlers::create_app;
 
 mod config;
@@ -27,17 +26,10 @@ async fn main() {
         std::process::exit(1);
     });
 
-    // Extract and collect log files from config into HashMap
-    let files = config.files.clone().unwrap_or_else(HashMap::new);
-    let files: Files = files;
-    
     println!("log_server: Starting on port 6969");
     println!("log_server: Config file: {}", config_path);
-    println!("log_server: Configured log files: {}", files.len());
 
-    let app = create_app(files).await;
+    let app = create_app(config).await;
     let listener = tokio::net::TcpListener::bind("0.0.0.0:6969").await.unwrap();
     axum::serve(listener, app).await.unwrap();
-
-    println!("log_server: Starting on port 6969");
 }
