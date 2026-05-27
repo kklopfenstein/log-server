@@ -1,5 +1,5 @@
 use axum::{
-    Router, extract::{Path, Query, State}, response::{IntoResponse, Json, Response}, routing::get
+    Router, extract::{Path, Query, State}, response::{Html, IntoResponse, Json, Response}, routing::get
 };
 use http::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -46,16 +46,16 @@ pub async fn logs_handler(
     Path(path_name): Path<String>,
     query: Query<LogsQuery>,
     State(state): State<LogConfig>
-) -> Response {
+) -> impl IntoResponse {
     handle_get_logs(path_name, query.0, state).await
 }
 
-pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConfig) -> Response {
+pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConfig) -> impl IntoResponse {
     let cursor = query.cursor.unwrap_or(0);
     let limit = query.limit.unwrap_or(100).min(1000).max(1);
 
     let Some(file_path) = log_config.get(&name) else {
-        return (StatusCode::NOT_FOUND, build_not_found_error(format!("{} was not found in the configuration file", &name))).into_response()
+        return (StatusCode::NOT_FOUND, Html(build_not_found_error(format!("{} was not found in the configuration file", &name))))
     };
 
     // Try to read the log file
@@ -64,7 +64,7 @@ pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConf
         Ok(f) => f,
         Err(e) => {
             eprintln!("Failed to read log file: {}", e);
-            return (StatusCode::NOT_FOUND, build_not_found_error(format!("encountered error {} while attempting to read log file {}", e, &file_path))).into_response();
+            return (StatusCode::NOT_FOUND, Html(build_not_found_error(format!("encountered error {} while attempting to read log file {}", e, &file_path))));
         }
     };
     
@@ -79,7 +79,8 @@ pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConf
     let lines: Vec<&str> = content.lines().filter(|l| !l.trim().is_empty()).rev().collect();
 
     if lines.is_empty() {
-        return (StatusCode::OK, Json(Vec::<LogLine>::new())).into_response();
+        let not_found_msg = "<html><body>Not found</body></html>";
+        return (StatusCode::OK, Html(not_found_msg.to_string()));
     }
 
     // cursor is 1-indexed position to fetch from (0 means skip all from start)
@@ -88,7 +89,7 @@ pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConf
     let final_limit = std::cmp::min(limit as usize, available - start_index);
 
     if start_index >= available {
-        return not_found().await;
+        return (StatusCode::NOT_FOUND, Html("<html></html>".to_string()));
     }
 
     // Build Vec<LogLine>
@@ -101,7 +102,41 @@ pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConf
         })
         .collect();
 
-    (StatusCode::OK, Json(result_lines)).into_response()
+    // Html(render_logs_html(result_lines)
+    //  Html("<p>With headers!</p>)")
+    (StatusCode::OK, Html(render_logs_html(result_lines)))
+}
+
+async fn handler() -> impl IntoResponse {
+    Html("<h1>Hello, Axum 0.7!</h1>")
+}
+
+fn render_logs_html(lines: Vec<LogLine>) -> String {
+    let mut html = String::new();
+    html.push_str("<!DOCTYPE html>");
+    html.push_str("<html><head><meta charset=\"utf-8\"><title>Logs</title>");
+    html.push_str("<style>body{{font-family:monospace;padding:20px;}}");
+    html.push_str("table{{border-collapse:collapse;width:100%;}}");
+    html.push_str("th,td{{border:1px solid #ccc;padding:8px;}}");
+    html.push_str("th{{background:#eee;}}");
+    html.push_str("code{{font-family:Consolas,monospace;}}</style></head>");
+    html.push_str("<body><h1>Logs</h1>");
+    html.push_str("<table><thead><tr><th>#</th><th>Content</th></tr></thead>");
+    html.push_str("<tbody>");
+    for (i, line) in lines.iter().enumerate() {
+        let line_num = (i + 1) as u64;
+        let line_td = format!("<td>{}</td>", line_num);
+        html.push_str(&line_td);
+        html.push_str("<td>");
+        html_escape::encode_safe_to_string(&line.line,  &mut html);
+        html.push_str("</td>");
+        html.push_str("</tr>");
+    }
+    html.push_str("</tbody>");
+    html.push_str("</table>");
+    html.push_str("</body>");
+    html.push_str("</html>");
+    html.to_string()
 }
 
 pub async fn not_found() -> Response {
@@ -208,7 +243,7 @@ use axum::response::IntoResponse;
         };
 
         let response = logs_handler(Path("test".to_string()), Query(query), State(state)).await;
-        let (_, body) = response.into_parts();
+        let (_, body) = response.into_response().into_parts();
         let body_bytes = axum::body::to_bytes(body, usize::MAX);
         let body_str = String::from_utf8(body_bytes.await.unwrap().to_vec()).unwrap();
 
@@ -236,7 +271,7 @@ use axum::response::IntoResponse;
         };
 
         let response = logs_handler(Path("test".to_string()), Query(query), State(state)).await;
-        let (_, body) = response.into_parts();
+        let (_, body) = response.into_response().into_parts();
         let body_bytes = axum::body::to_bytes(body, usize::MAX);
         let body_str = String::from_utf8(body_bytes.await.unwrap().to_vec()).unwrap();
 
