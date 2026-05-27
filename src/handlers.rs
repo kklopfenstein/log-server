@@ -25,7 +25,7 @@ pub async fn create_app(config: LogConfig) -> Router<()> {
         .route("/", get(root_handler))
         .route("/hello", get(hello_handler))
         .route("/health", get(health_handler))
-        .route("/logs/{path_name}", get(logs_handler))
+        .route("/logs/:path_name", get(logs_handler))
         .fallback(not_found)
         .with_state(config)
 }
@@ -76,7 +76,7 @@ pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConf
         .unwrap_or_default();
 
     // Split into lines and filter empty lines
-    let lines: Vec<&str> = content.lines().filter(|l| !l.trim().is_empty()).collect();
+    let lines: Vec<&str> = content.lines().filter(|l| !l.trim().is_empty()).rev().collect();
 
     if lines.is_empty() {
         return (StatusCode::OK, Json(Vec::<LogLine>::new())).into_response();
@@ -92,7 +92,7 @@ pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConf
     }
 
     // Build Vec<LogLine>
-    let result_lines: Vec<LogLine> = lines[start_index..start_index + final_limit]
+    let result_lines: Vec<LogLine> = lines[start_index..start_index+final_limit]
         .iter()
         .enumerate()
         .map(|(num, l)| LogLine {
