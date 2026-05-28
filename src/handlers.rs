@@ -1,5 +1,5 @@
 use axum::{
-    Router, extract::{Path, Query, State}, response::{Html, IntoResponse, Json, Response}, routing::get
+    Router, extract::{Path, Query, State}, response::{Html, IntoResponse, Response}, routing::get
 };
 use http::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -52,7 +52,7 @@ pub async fn logs_handler(
 
 pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConfig) -> impl IntoResponse {
     let cursor = query.cursor.unwrap_or(0);
-    let limit = query.limit.unwrap_or(100).min(1000).max(1);
+    let limit = query.limit.unwrap_or(50).min(1000).max(1);
 
     let Some(file_path) = log_config.get(&name) else {
         return (StatusCode::NOT_FOUND, Html(build_not_found_error(format!("{} was not found in the configuration file", &name))))
@@ -102,16 +102,10 @@ pub async fn handle_get_logs(name: String, query: LogsQuery, log_config: LogConf
         })
         .collect();
 
-    // Html(render_logs_html(result_lines)
-    //  Html("<p>With headers!</p>)")
-    (StatusCode::OK, Html(render_logs_html(result_lines)))
+    (StatusCode::OK, Html(render_logs_html(result_lines, name, cursor, limit)))
 }
 
-async fn handler() -> impl IntoResponse {
-    Html("<h1>Hello, Axum 0.7!</h1>")
-}
-
-fn render_logs_html(lines: Vec<LogLine>) -> String {
+fn render_logs_html(lines: Vec<LogLine>, name: String, cursor: u64, limit: u64) -> String {
     let mut html = String::new();
     html.push_str("<!DOCTYPE html>");
     html.push_str("<html><head><meta charset=\"utf-8\"><title>Logs</title>");
@@ -134,6 +128,10 @@ fn render_logs_html(lines: Vec<LogLine>) -> String {
     }
     html.push_str("</tbody>");
     html.push_str("</table>");
+    let next_cursor = cursor + limit;
+    let prev_cursor = if cursor >= limit { cursor - limit } else { 0 };
+    let links = format!("<div><a href=\"/logs/{}?cursor={}&limit={}\">Previous</a></div><div><a href=\"/logs/{}?cursor={}&limit={}\">Next</a></div>", name, prev_cursor, limit, name, next_cursor, limit);
+    html.push_str(&links);
     html.push_str("</body>");
     html.push_str("</html>");
     html.to_string()
