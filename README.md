@@ -4,8 +4,17 @@ A stateless HTTP server for managing log files on the local file system.
 
 ## Quick Start
 
-```bash
+### Windows
+
+```powershell
+$env:CONFIG_FILE = ".\example\config.yaml"
 cargo run
+```
+
+### Linux
+
+```bash
+CONFIG_FILE="example/config.yaml" cargo run
 ```
 
 ## API Documentation
@@ -13,6 +22,7 @@ cargo run
 - `GET /` - Minimal HTML welcome page
 - `GET /hello` - Returns "Hello, World!"
 - `GET /health` - Health check returning "OK"
+- `GET /logs/{file}` - Return logs for a file.
 
 ## Configuration
 
@@ -28,7 +38,7 @@ cargo test -- --nocapture  # Verbose output
 
 ## Deployment
 
-Compatible with Linux (Raspberry Pi) and Windows.
+Compatible with Linux and Windows.
 
 ## Future Features
 
